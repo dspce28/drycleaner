@@ -5,7 +5,7 @@ import {
 } from 'framer-motion'
 import Lenis from 'lenis'
 import {
-  chapters, clip, contact, garments, qr, quiz, services, slots, tech, wa, wall, wallLabels, wardrobe,
+  chapters, clip, contact, garments, qr, services, shirt, slots, tech, wa, wall, wallLabels,
 } from './content.js'
 
 const ease = [0.76, 0, 0.24, 1]
@@ -156,7 +156,7 @@ function Intro({ onDone }) {
 
 /* ---------- Nav ---------- */
 
-const links = [['Services', '#services'], ['Process', '#process'], ['Studio', '#studio'], ['Pricing', '#pricing'], ['Visit', '#book']]
+const links = [['Services', '#services'], ['Stain test', '#stains'], ['Process', '#process'], ['Studio', '#studio-wall'], ['Pricing', '#pricing'], ['Visit', '#book']]
 
 function Nav() {
   const { scrollY } = useScroll()
@@ -214,88 +214,294 @@ function ThemeSwitch() {
   )
 }
 
-/* ---------- Hero ---------- */
+/* ---------- Hero: the Aspen mark as a window that opens onto the studio ---------- */
+
+const MARK_MASK = `url("data:image/svg+xml;utf8,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='300' height='360' viewBox='258 42 300 360'><path d='M405 50 L506 288 C440 282 340 318 268 392 Z'/><path d='M396 354 C440 326 486 312 516 312 L549 394 C512 366 455 350 396 354 Z'/></svg>",
+)}")`
 
 function Hero({ ready }) {
   const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const archY = useTransform(scrollYProgress, [0, 1], ['0%', '12%'])
-  const vidScale = useTransform(scrollYProgress, [0, 1], [1, 1.15])
-  const orbY = useTransform(scrollYProgress, [0, 1], ['0%', '-40%'])
-  const ghostX = useTransform(scrollYProgress, [0, 1], ['0%', '-12%'])
-  const rx = useSpring(0, { stiffness: 70, damping: 18 })
-  const ry = useSpring(0, { stiffness: 70, damping: 18 })
+  const [wide, setWide] = useState(() => matchMedia('(min-width: 760px)').matches)
+  useEffect(() => {
+    const mq = matchMedia('(min-width: 760px)')
+    const on = () => setWide(mq.matches)
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
+  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+  const base = wide ? 64 : 46
+  const h = useTransform(p, [0, 0.62], [base, base * 30], { ease: (t) => t * t * t })
+  const size = useTransform(h, (v) => `auto ${v}vh`)
+  const rimOpacity = useTransform(p, [0, 0.18], [1, 0])
+  const sideL = useTransform(p, [0, 0.3], ['0%', '-60%'])
+  const sideR = useTransform(p, [0, 0.3], ['0%', '60%'])
+  const sideO = useTransform(p, [0, 0.22], [1, 0])
+  const shade = useTransform(p, [0.45, 0.7], [0, 1])
+  const finalO = useTransform(p, [0.58, 0.75], [0, 1])
+  const finalY = useTransform(p, [0.58, 0.8], [40, 0])
+  const vidScale = useTransform(p, [0, 0.7], [1.25, 1])
+  const src = clip(wide ? 'hero-wide' : 'hero-tall')
+  const vref = useRef(null)
+  useEffect(() => { vref.current?.play().catch(() => {}) }, [wide])
+
   return (
-    <section className="hero" id="top" ref={ref}
-      onPointerMove={(e) => { ry.set((e.clientX / innerWidth - 0.5) * 8); rx.set((0.5 - e.clientY / innerHeight) * 6) }}>
-      <motion.div className="hero__ghost" style={{ x: ghostX }} aria-hidden="true">ASPEN</motion.div>
-      <div className="hero__copy">
-        <motion.p className="kicker" initial={{ opacity: 0, y: 12 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1, duration: 0.8 }}>
-          <Mark size={14} /> Dry cleaning &amp; garment care · Ahmedabad
-        </motion.p>
-        <h1 className="hero__title">
-          {['Care for', 'what matters.'].map((l, i) => (
-            <span className="line" key={l}>
-              <motion.span className={`line__in ${i === 1 ? 'accent shimmer' : ''}`} initial={{ y: '110%' }} animate={ready ? { y: '0%' } : {}}
-                transition={{ duration: 1.1, delay: 0.2 + i * 0.12, ease: soft }}>{l}</motion.span>
-            </span>
-          ))}
-        </h1>
-        <motion.p className="hero__lede" initial={{ opacity: 0, y: 16 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.6, duration: 0.9 }}>
-          Silk sarees, bridal lehengas and everyday shirts, cleaned in Italian machines, finished by hand and packed with gloves.
-        </motion.p>
-        <motion.div className="hero__ctas" initial={{ opacity: 0, y: 16 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.75, duration: 0.9 }}>
-          <Magnetic><a className="btn btn--gold btn--lg" href="#book" data-cursor="Book">Schedule a pickup →</a></Magnetic>
-          <a className="play" href="#process" data-cursor="Watch">
-            <span className="play__ring"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor" /></svg></span>
-            Watch the process
-          </a>
+    <section className="mh" id="top" ref={ref}>
+      <div className="mh__stage">
+        <div className="mh__glow" aria-hidden="true" />
+        <motion.div className="mh__window" style={{ WebkitMaskImage: MARK_MASK, maskImage: MARK_MASK, WebkitMaskSize: size, maskSize: size }}
+          initial={{ opacity: 0, scale: 0.92 }} animate={ready ? { opacity: 1, scale: 1 } : {}} transition={{ duration: 1.4, ease: soft }}>
+          <motion.video ref={vref} key={src.src} className="clip" src={src.src} poster={src.poster} muted loop playsInline autoPlay preload="auto"
+            style={{ scale: vidScale }} aria-label="Smoothing a white garment with a heavy gold zari border" />
+          <motion.div className="mh__shade" style={{ opacity: shade }} />
+        </motion.div>
+        <motion.svg className="mh__rim" viewBox="258 42 300 360" style={{ height: useTransform(h, (v) => `${v}vh`), opacity: rimOpacity }} aria-hidden="true">
+          <motion.path d="M405 50 L506 288 C440 282 340 318 268 392 Z" fill="none" stroke="var(--gold)" strokeWidth="1" vectorEffect="non-scaling-stroke"
+            initial={{ pathLength: 0 }} animate={ready ? { pathLength: 1 } : {}} transition={{ duration: 2.4, delay: 0.3, ease: 'easeInOut' }} />
+        </motion.svg>
+
+        <motion.div className="mh__side mh__side--l" style={{ x: sideL, opacity: sideO }}>
+          <motion.p className="kicker" initial={{ opacity: 0 }} animate={ready ? { opacity: 1 } : {}} transition={{ delay: 0.6 }}>Sindhubhavan Road · Ahmedabad</motion.p>
+          <h1 className="mh__word">
+            <span className="line"><motion.span className="line__in" initial={{ y: '110%' }} animate={ready ? { y: '0%' } : {}} transition={{ duration: 1.2, delay: 0.3, ease: soft }}>Care for</motion.span></span>
+          </h1>
+        </motion.div>
+        <motion.div className="mh__side mh__side--r" style={{ x: sideR, opacity: sideO }} aria-hidden="true">
+          <p className="mh__word mh__word--accent">
+            <span className="line"><motion.span className="line__in accent shimmer" initial={{ y: '110%' }} animate={ready ? { y: '0%' } : {}} transition={{ duration: 1.2, delay: 0.45, ease: soft }}>what</motion.span></span>
+            <span className="line"><motion.span className="line__in accent shimmer" initial={{ y: '110%' }} animate={ready ? { y: '0%' } : {}} transition={{ duration: 1.2, delay: 0.55, ease: soft }}>matters.</motion.span></span>
+          </p>
+        </motion.div>
+        <motion.div className="mh__foot" style={{ opacity: sideO }} initial={{ opacity: 0, y: 20 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 1, duration: 1 }}>
+          <span>Dry cleaning &amp; couture garment care</span>
+          <span className="mh__scroll" aria-hidden="true"><i /></span>
+          <span>Scroll to step inside</span>
+        </motion.div>
+
+        <motion.div className="mh__final" style={{ opacity: finalO, y: finalY }}>
+          <p className="eyebrow eyebrow--light">Aspen Cleaners · Ahmedabad</p>
+          <h2>Every garment,<br /><em>handled like couture.</em></h2>
+          <p className="mh__lede">Italian Firbimatic machines. Stains treated by hand. Finished with steam, packed with gloves, returned to your door.</p>
+          <div className="mh__ctas">
+            <Magnetic><a className="btn btn--gold btn--lg" href="#book" data-cursor="Book">Schedule a pickup →</a></Magnetic>
+            <a className="btn btn--glass btn--lg" href="#stains" data-cursor="Play">Try the stain test</a>
+          </div>
         </motion.div>
       </div>
+    </section>
+  )
+}
 
-      <div className="hero__stage">
-        <motion.div className="hero__tilt" style={{ rotateX: rx, rotateY: ry, y: archY }}>
-          <svg className="hero__outline" viewBox="0 0 400 560" preserveAspectRatio="none" aria-hidden="true">
-            <motion.path d="M4 556 V200 A196 196 0 0 1 396 200 V556 Z" fill="none" stroke="var(--gold)" strokeWidth="1.5"
-              vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} animate={ready ? { pathLength: 1 } : {}} transition={{ duration: 2.2, delay: 0.4, ease: 'easeInOut' }} />
-          </svg>
-          <motion.div className="hero__arch"
-            initial={{ clipPath: 'inset(100% 0 0 0 round 999px 999px 0 0)' }}
-            animate={ready ? { clipPath: 'inset(0% 0 0 0 round 999px 999px 0 0)' } : {}}
-            transition={{ duration: 1.4, delay: 0.15, ease }}>
-            <motion.div className="hero__scale" style={{ scale: vidScale }}><Clip k="147" eager label="Steaming an embroidered anarkali by hand" /></motion.div>
-            <span className="hero__caption"><i /> Live from the finishing floor</span>
-          </motion.div>
-        </motion.div>
+/* ---------- Stain test: scrub real-life stains off an Aspen shirt ---------- */
 
-        <motion.div className="orb" style={{ y: orbY }} initial={{ scale: 0, rotate: -30 }} animate={ready ? { scale: 1, rotate: 0 } : {}}
-          transition={{ delay: 1, type: 'spring', stiffness: 120, damping: 16 }}>
-          <svg className="orb__ring" viewBox="0 0 200 200" aria-hidden="true">
-            <defs><path id="orbPath" d="M100 100 m-86 0 a86 86 0 1 1 172 0 a86 86 0 1 1 -172 0" /></defs>
-            <text><textPath href="#orbPath">GLOVED PACKING · HAND FINISHED · MADE IN ITALY · </textPath></text>
-          </svg>
-          <div className="orb__vid"><Clip k="150" eager label="A purple silk saree with gold motifs" /></div>
-        </motion.div>
+const STAINS = [
+  { id: 'haldi', x: 0.3, y: 0.46, r: 0.085, color: [214, 160, 10], label: 'Haldi', note: 'From the sangeet', quip: 'Turmeric is stubborn. We are more stubborn.' },
+  { id: 'chai', x: 0.66, y: 0.36, r: 0.07, color: [120, 72, 30], ring: true, label: 'Chai', note: 'Office, 4 pm', quip: 'Cutting chai, cut out.' },
+  { id: 'biryani', x: 0.44, y: 0.72, r: 0.08, color: [200, 86, 24], label: 'Biryani', note: 'Sunday lunch', quip: 'Worth it. Every time.' },
+  { id: 'holi', x: 0.22, y: 0.8, r: 0.075, color: [214, 38, 120], splatter: true, label: 'Holi', note: 'Last March', quip: 'Keep the memories. Lose the gulal.' },
+  { id: 'ink', x: 0.77, y: 0.6, r: 0.05, color: [31, 58, 160], label: 'Ink', note: 'Homework (not yours)', quip: 'Pens leak. Pockets suffer. We fix.' },
+  { id: 'lipstick', x: 0.58, y: 0.2, r: 0.045, color: [176, 20, 44], label: 'Lipstick', note: 'We won’t ask', quip: 'Our lips are sealed. Your collar is clean.' },
+]
 
-        <motion.div className="hanger" initial={{ opacity: 0, y: -40 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 1.3, duration: 0.8 }}>
-          <span className="hanger__thread" />
-          <motion.div className="tag" drag dragSnapToOrigin dragElastic={0.5} whileDrag={{ scale: 1.06 }} data-cursor="Drag"
-            animate={ready ? { rotate: [10, -7, 4, -2, 0] } : {}} transition={{ delay: 1.3, duration: 2.6 }}>
-            <span className="tag__hole" />
-            <Mark size={18} />
-            <b>ASPEN</b>
-            <span>Expert care.<br />Impeccable finish.</span>
-            <em>No. 001 · AHD</em>
-          </motion.div>
-        </motion.div>
+function rand(seed) {
+  let s = seed
+  return () => ((s = (s * 16807) % 2147483647) / 2147483647)
+}
+
+function StainLab() {
+  const box = useRef(null)
+  const canvas = useRef(null)
+  const fx = useRef(null)
+  const samples = useRef({})
+  const bubbles = useRef([])
+  const [gone, setGone] = useState([])
+  const [last, setLast] = useState(null)
+  const [round, setRound] = useState(0)
+  const done = gone.length === STAINS.length
+
+  const paint = useCallback(() => {
+    const c = canvas.current
+    const w = box.current.clientWidth
+    const hgt = box.current.clientHeight
+    const dpr = Math.min(devicePixelRatio || 1, 2)
+    c.width = w * dpr; c.height = hgt * dpr
+    const ctx = c.getContext('2d')
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.clearRect(0, 0, w, hgt)
+    samples.current = {}
+    STAINS.forEach((s, si) => {
+      const R = s.r * w
+      const cx = s.x * w
+      const cy = s.y * hgt
+      const rnd = rand(si * 97 + 13 + round * 7)
+      const [r, g, b] = s.color
+      for (let i = 0; i < 26; i++) {
+        const a = rnd() * Math.PI * 2
+        const d = rnd() * R * 0.55
+        const rr = R * (0.35 + rnd() * 0.45)
+        const x = cx + Math.cos(a) * d
+        const y = cy + Math.sin(a) * d
+        const gr = ctx.createRadialGradient(x, y, 0, x, y, rr)
+        gr.addColorStop(0, `rgba(${r},${g},${b},${0.3 + rnd() * 0.22})`)
+        gr.addColorStop(s.ring ? 0.85 : 0.7, `rgba(${r},${g},${b},${s.ring ? 0.42 : 0.22})`)
+        gr.addColorStop(1, `rgba(${r},${g},${b},0)`)
+        ctx.fillStyle = gr
+        ctx.beginPath(); ctx.arc(x, y, rr, 0, Math.PI * 2); ctx.fill()
+      }
+      if (s.splatter) {
+        for (let i = 0; i < 40; i++) {
+          const a = rnd() * Math.PI * 2
+          const d = R * (0.6 + rnd() * 1.1)
+          ctx.fillStyle = `rgba(${i % 3 ? `${r},${g},${b}` : '30,150,70'},${0.35 + rnd() * 0.4})`
+          ctx.beginPath(); ctx.arc(cx + Math.cos(a) * d, cy + Math.sin(a) * d, 1 + rnd() * R * 0.09, 0, Math.PI * 2); ctx.fill()
+        }
+      }
+      const pts = []
+      for (let i = 0; i < 36; i++) {
+        const a = (i / 36) * Math.PI * 2 * 3.1
+        const d = R * 0.75 * Math.sqrt((i + 1) / 36)
+        pts.push([cx + Math.cos(a) * d, cy + Math.sin(a) * d])
+      }
+      samples.current[s.id] = { pts, hit: new Set() }
+    })
+  }, [round])
+
+  useEffect(() => {
+    paint()
+    const ro = new ResizeObserver(() => { setGone([]); paint() })
+    ro.observe(box.current)
+    return () => ro.disconnect()
+  }, [paint])
+
+  // bubbles that float up from the brush
+  useEffect(() => {
+    const c = fx.current
+    const ctx = c.getContext('2d')
+    let raf
+    const loop = () => {
+      const w = box.current.clientWidth
+      const hgt = box.current.clientHeight
+      if (c.width !== w) { c.width = w; c.height = hgt }
+      ctx.clearRect(0, 0, w, hgt)
+      bubbles.current = bubbles.current.filter((bb) => (bb.life -= 1) > 0)
+      for (const bb of bubbles.current) {
+        bb.y -= bb.vy; bb.x += Math.sin(bb.life / 6) * 0.4
+        ctx.strokeStyle = `rgba(255,255,255,${bb.life / 60})`
+        ctx.fillStyle = `rgba(215,162,51,${bb.life / 400})`
+        ctx.lineWidth = 1.2
+        ctx.beginPath(); ctx.arc(bb.x, bb.y, bb.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
+      }
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  const scrubbing = useRef(false)
+  const lastPt = useRef(null)
+  const scrub = (e) => {
+    if (!scrubbing.current) return
+    const rect = canvas.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const brush = Math.max(18, rect.width * 0.045)
+    const ctx = canvas.current.getContext('2d')
+    ctx.globalCompositeOperation = 'destination-out'
+    const from = lastPt.current || [x, y]
+    const steps = Math.max(1, Math.hypot(x - from[0], y - from[1]) / (brush / 3))
+    for (let i = 1; i <= steps; i++) {
+      const px = from[0] + ((x - from[0]) * i) / steps
+      const py = from[1] + ((y - from[1]) * i) / steps
+      const gr = ctx.createRadialGradient(px, py, 0, px, py, brush)
+      gr.addColorStop(0, 'rgba(0,0,0,0.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = gr
+      ctx.beginPath(); ctx.arc(px, py, brush, 0, Math.PI * 2); ctx.fill()
+      for (const s of STAINS) {
+        const smp = samples.current[s.id]
+        if (!smp || gone.includes(s.id)) continue
+        smp.pts.forEach(([sx, sy], k) => { if (Math.hypot(sx - px, sy - py) < brush * 0.8) smp.hit.add(k) })
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over'
+    lastPt.current = [x, y]
+    if (Math.random() < 0.5) bubbles.current.push({ x: x + (Math.random() - 0.5) * brush, y, r: 2 + Math.random() * 6, vy: 0.6 + Math.random() * 1.2, life: 40 + Math.random() * 30 })
+    const fresh = STAINS.filter((s) => !gone.includes(s.id) && samples.current[s.id].hit.size / samples.current[s.id].pts.length > 0.7)
+    if (fresh.length) {
+      fresh.forEach((s) => {
+        // wipe whatever is left of a finished stain
+        const w = box.current.clientWidth
+        const R = s.r * w * 2.2
+        ctx.clearRect(s.x * w - R, s.y * box.current.clientHeight - R, R * 2, R * 2)
+      })
+      setGone((g) => [...g, ...fresh.map((s) => s.id)])
+      setLast(fresh[fresh.length - 1])
+    }
+  }
+
+  const reset = () => { setGone([]); setLast(null); setRound((r) => r + 1) }
+
+  return (
+    <section className="stains" id="stains">
+      <div className="wrap stains__grid">
+        <div className="stains__copy">
+          <p className="eyebrow">The stain test</p>
+          <Lines text={'Stained?\nRelax.'} accent={1} />
+          <Rise as="p" className="lede">Haldi at the sangeet. Chai at 4 pm. Biryani on a Sunday. Life happens on your clothes, and that is exactly what we are here for.</Rise>
+          <Rise as="p" className="stains__rule" delay={0.1}>
+            <b>At home, never rub a stain.</b> Here, go ahead. Scrub this shirt clean with your {matchMedia('(pointer: fine)').matches ? 'mouse' : 'finger'}.
+          </Rise>
+          <div className="stains__meter" aria-live="polite">
+            <div className="stains__bar"><motion.span animate={{ width: `${(gone.length / STAINS.length) * 100}%` }} transition={{ duration: 0.6, ease: soft }} /></div>
+            <span>{gone.length} of {STAINS.length} stains gone</span>
+          </div>
+          <AnimatePresence mode="wait">
+            {done ? (
+              <motion.div key="done" className="stains__done" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <p><b>Spotless.</b> We do this every day, with real stains and without the rubbing.</p>
+                <div className="stains__ctas">
+                  <Magnetic><a className="btn btn--gold" href={wa('Hello Aspen Cleaners, I have a stain that needs your help. Sending a photo.')} target="_blank" rel="noreferrer" data-cursor="Send">Send us your real stain →</a></Magnetic>
+                  <button className="text-btn" onClick={reset}>Stain it again</button>
+                </div>
+              </motion.div>
+            ) : last ? (
+              <motion.p key={last.id} className="stains__quip" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                <span>{last.label} gone.</span> {last.quip}
+              </motion.p>
+            ) : (
+              <motion.p key="hint" className="stains__quip stains__quip--hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                Start anywhere. Each stain has a story.
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="stains__stage">
+          <div className="shirt" ref={box}>
+            <img src={shirt} alt="A white shirt folded by the Aspen team" draggable="false" />
+            <canvas ref={canvas} className="shirt__stains" data-cursor="Scrub"
+              onPointerDown={(e) => { scrubbing.current = true; lastPt.current = null; e.currentTarget.setPointerCapture(e.pointerId); scrub(e) }}
+              onPointerMove={scrub}
+              onPointerUp={() => { scrubbing.current = false }} onPointerCancel={() => { scrubbing.current = false }} />
+            <canvas ref={fx} className="shirt__fx" aria-hidden="true" />
+            {STAINS.map((s) => (
+              <motion.span key={s.id} className={`pin ${s.x > 0.65 ? 'is-right' : ''} ${gone.includes(s.id) ? 'is-gone' : ''}`} style={{ left: `${s.x * 100}%`, top: `${(s.y + s.r * 0.75) * 100}%` }}
+                animate={gone.includes(s.id) ? { opacity: 0, y: -14, scale: 0.9 } : { opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.5, delay: gone.includes(s.id) ? 0.6 : 0 }}>
+                <b>{s.label}</b> {s.note}
+              </motion.span>
+            ))}
+            <AnimatePresence>
+              {done && (
+                <motion.div className="stamp" initial={{ opacity: 0, scale: 2.2, rotate: -24 }} animate={{ opacity: 1, scale: 1, rotate: -12 }} exit={{ opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 260, damping: 16 }}>
+                  <Mark size={22} />
+                  <span>Aspen clean</span>
+                  <small>Expert care · Impeccable finish</small>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
-
-      <motion.ul className="hero__ribbon" initial={{ opacity: 0, y: 20 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 1.1, duration: 1 }}>
-        <li><b>Free</b> pickup &amp; delivery</li>
-        <li><b>Italian</b> Firbimatic machines</li>
-        <li><b>Hand</b> finished</li>
-        <li><b>Gloved</b> packing</li>
-      </motion.ul>
     </section>
   )
 }
@@ -323,31 +529,6 @@ function Marquee() {
     <div className="marquee" aria-label={`We care for ${garments.join(', ')}`}>
       <motion.div className="marquee__track" style={{ x }} aria-hidden="true">{row}{row}</motion.div>
     </div>
-  )
-}
-
-/* ---------- Statement that lights up as you read ---------- */
-
-function Word({ children, progress, range, accent }) {
-  const opacity = useTransform(progress, range, [0.18, 1])
-  return <span className={accent ? 'accent' : ''}><motion.span style={{ opacity }}>{children}</motion.span>{' '}</span>
-}
-
-function Statement() {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'end 0.5'] })
-  const words = 'Cleaning is only part of the job. Every garment is inspected, treated for its fabric, finished by hand and returned ready to wear. Some clothes deserve a little more care.'.split(' ')
-  return (
-    <section className="statement">
-      <div className="wrap">
-        <p className="eyebrow">The Aspen standard</p>
-        <p className="statement__text" ref={ref}>
-          {words.map((w, i) => (
-            <Word key={i} progress={scrollYProgress} range={[i / words.length, (i + 1) / words.length]} accent={/^care\.?$/.test(w)}>{w}</Word>
-          ))}
-        </p>
-      </div>
-    </section>
   )
 }
 
@@ -407,7 +588,7 @@ function Process() {
   const bar = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
   const c = chapters[i]
   return (
-    <section className="process" id="process" ref={ref} style={{ height: `${chapters.length * 60 + 40}vh` }}>
+    <section className="process" id="process" ref={ref} style={{ height: `${chapters.length * 34 + 60}vh` }}>
       <div className="process__sticky">
         <div className="process__side">
           <p className="eyebrow eyebrow--light">Here is what happens at Aspen</p>
@@ -440,61 +621,6 @@ function Process() {
               <p>{c.text}</p>
             </motion.div>
           </AnimatePresence>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ---------- Wardrobe index with a floating video preview ---------- */
-
-function Wardrobe() {
-  const ref = useRef(null)
-  const [active, setActive] = useState(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const sx = useSpring(x, { stiffness: 150, damping: 20 })
-  const sy = useSpring(y, { stiffness: 150, damping: 20 })
-  const rot = useSpring(0, { stiffness: 120, damping: 14 })
-  const last = useRef(0)
-  return (
-    <section className="wardrobe">
-      <div className="wrap">
-        <div className="head head--split">
-          <div>
-            <p className="eyebrow">An Indian wardrobe</p>
-            <Lines text={'Specialist care for\nspecial garments.'} accent={1} />
-          </div>
-          <Rise as="p" className="lede">From a grandmother's Kanjeevaram to this season's sherwani. Point at a garment to see how we handle it.</Rise>
-        </div>
-        <div className="wardrobe__list" ref={ref} onPointerLeave={() => setActive(null)}
-          onPointerMove={(e) => {
-            const r = ref.current.getBoundingClientRect()
-            x.set(e.clientX - r.left); y.set(e.clientY - r.top)
-            rot.set(Math.max(-10, Math.min(10, (e.clientX - last.current) * 0.6))); last.current = e.clientX
-          }}>
-          {wardrobe.map((w, i) => (
-            <a key={w.name} className={`wardrobe__row ${active === i ? 'is-on' : ''} ${active !== null && active !== i ? 'is-dim' : ''}`}
-              href={wa(`Hello Aspen Cleaners, I would like to send my ${w.name.toLowerCase()} for care.`)} target="_blank" rel="noreferrer"
-              onPointerEnter={() => setActive(i)} data-cursor="Book">
-              <span className="num">{pad(i + 1)}</span>
-              <span className="wardrobe__name">{w.name}</span>
-              <span className="wardrobe__note">{w.note}</span>
-              <span className="wardrobe__arrow" aria-hidden="true">→</span>
-            </a>
-          ))}
-          <motion.div className="wardrobe__float" style={{ x: sx, y: sy, rotate: rot }} aria-hidden="true">
-            <AnimatePresence>
-              {active !== null && (
-                <motion.div key={active} className="wardrobe__vid"
-                  initial={{ opacity: 0, scale: 0.85, clipPath: 'inset(50% 0 50% 0 round 18px)' }}
-                  animate={{ opacity: 1, scale: 1, clipPath: 'inset(0% 0 0% 0 round 18px)' }}
-                  exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5, ease: soft }}>
-                  <Clip k={wardrobe[active].clip} eager />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
         </div>
       </div>
     </section>
@@ -541,72 +667,6 @@ function Technology() {
           <p className="lede lede--light">The machines matter. The people who choose the cycle matter more. This is the equipment your clothes meet at Aspen.</p>
         </div>
         <div className="specs">{tech.map((t, i) => <TiltCard t={t} i={i} key={t.name} />)}</div>
-      </div>
-    </section>
-  )
-}
-
-/* ---------- Finishing ---------- */
-
-function Finishing() {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const scale = useTransform(scrollYProgress, [0, 0.45], [0.72, 1])
-  const radius = useTransform(scrollYProgress, [0, 0.45], [240, 26])
-  const y = useTransform(scrollYProgress, [0, 1], ['12%', '-12%'])
-  return (
-    <section className="finish" id="studio" ref={ref}>
-      <div className="wrap finish__grid">
-        <motion.div className="finish__media" style={{ scale, borderRadius: radius }}>
-          <Clip k="145" label="Steaming an embroidered anarkali by hand" />
-        </motion.div>
-        <div>
-          <p className="eyebrow">Hand finishing</p>
-          <Lines text={'The difference\nis in the finish.'} accent={1} />
-          <Rise as="p" className="lede">Borders, gota, pleats and collars are steamed and set by hand, so the garment comes back the way it was made to fall.</Rise>
-          <motion.div className="finish__thumbs" style={{ y }}>
-            <figure><Clip k="132" label="Pressing a jacket on the form" /><figcaption>Form press</figcaption></figure>
-            <figure><Clip k="163" label="Folding a white shirt" /><figcaption>Shirt fold</figcaption></figure>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ---------- Stain quiz ---------- */
-
-function Quiz() {
-  const [pick, setPick] = useState(null)
-  return (
-    <section className="quiz">
-      <div className="wrap quiz__grid">
-        <div>
-          <p className="eyebrow eyebrow--light">Stain first aid · try it</p>
-          <h2 className="h2 h2--light">{quiz.question}</h2>
-        </div>
-        <div className="quiz__opts">
-          {quiz.options.map((o) => {
-            const state = pick ? (o.key === quiz.answer ? 'right' : o.key === pick ? 'wrong' : 'dim') : ''
-            return (
-              <motion.button key={o.key} className={`quiz__opt ${state}`} onClick={() => setPick(o.key)} whileHover={{ x: 6 }} whileTap={{ scale: 0.98 }} aria-pressed={pick === o.key}>
-                <span className="quiz__key">{o.key}</span>
-                <span className="quiz__label">{o.label}</span>
-                <AnimatePresence>
-                  {pick && (o.key === pick || o.key === quiz.answer) && (
-                    <motion.span className="quiz__verdict" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>{o.verdict}</motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            )
-          })}
-          {pick && (
-            <p className="quiz__result" aria-live="polite">
-              {pick === quiz.answer ? 'Right. Blot first, then let us take it from there.' : 'Close. The answer is C: blot it.'}{' '}
-              <button className="text-btn" onClick={() => setPick(null)}>Try again</button>
-            </p>
-          )}
-        </div>
       </div>
     </section>
   )
@@ -725,7 +785,7 @@ function Book() {
           <address className="book__addr">{contact.address.map((l) => <span key={l}>{l}</span>)}</address>
           <a className="link link--light" href={contact.maps} target="_blank" rel="noreferrer">Get directions →</a>
           <div className="book__phones">
-            {contact.phones.map((p) => <div key={p.number}><span>Call or WhatsApp</span><strong>{p.label}</strong></div>)}
+            {contact.phones.map((p) => <a key={p.number} href={`tel:+${p.number}`}><span>Call or WhatsApp</span><strong>{p.label}</strong></a>)}
           </div>
         </div>
         <form className="form" onSubmit={(e) => { e.preventDefault(); setTried(true) }} noValidate>
@@ -788,7 +848,7 @@ function Footer() {
       <div className="wrap footer__grid">
         <div><Wordmark /><p>Dry cleaning &amp; garment care.<br />Care for what matters.</p></div>
         <div><h4>Visit</h4><p>{contact.address.map((l) => <span key={l}>{l}</span>)}</p><a href={contact.maps} target="_blank" rel="noreferrer">Open in Google Maps</a></div>
-        <div><h4>Call or WhatsApp</h4>{contact.phones.map((p) => <p key={p.number} className="footer__num">{p.label}</p>)}<a href={wa('Hello Aspen Cleaners')} target="_blank" rel="noreferrer">Message us</a></div>
+        <div><h4>Call or WhatsApp</h4>{contact.phones.map((p) => <p key={p.number} className="footer__num"><a href={`tel:+${p.number}`}>{p.label}</a></p>)}<a href={wa('Hello Aspen Cleaners')} target="_blank" rel="noreferrer">Message us</a></div>
         <a className="footer__ig" href={contact.instagram} target="_blank" rel="noreferrer" data-cursor="Follow">
           <img src={qr} alt="Instagram QR code for @aspen_cleaners_ahmedabad" /><span>{contact.instagramHandle}</span>
         </a>
@@ -810,6 +870,22 @@ function Fab({ show }) {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.2c0-.1-.2-.2-.5-.3Z" /></svg>
           <span>Schedule a pickup</span>
         </motion.a>
+      )}
+    </AnimatePresence>
+  )
+}
+
+function MobileBar() {
+  const { scrollY } = useScroll()
+  const [show, setShow] = useState(false)
+  useMotionValueEvent(scrollY, 'change', (v) => setShow(v > innerHeight * 1.2))
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div className="mbar" initial={{ y: '110%' }} animate={{ y: 0 }} exit={{ y: '110%' }} transition={{ type: 'spring', stiffness: 260, damping: 28 }}>
+          <div><b>Pickup today?</b><span>Free collection across Ahmedabad</span></div>
+          <a className="btn btn--gold btn--sm" href={wa('Hello Aspen Cleaners, I would like a pickup today.')} target="_blank" rel="noreferrer">Book on WhatsApp</a>
+        </motion.div>
       )}
     </AnimatePresence>
   )
@@ -843,19 +919,17 @@ export default function App() {
       <main>
         <Hero ready={ready} />
         <Marquee />
-        <Statement />
+        <StainLab />
         <Services />
         <Process />
-        <Wardrobe />
         <Technology />
-        <Finishing />
-        <Quiz />
         <Reel />
         <Pricing />
         <Book />
       </main>
       <Footer />
       <Fab show={ready} />
+      <MobileBar />
     </MotionConfig>
   )
 }

@@ -3,6 +3,7 @@ const clips = import.meta.glob('./media/*.mp4', { eager: true, import: 'default'
 const posters = import.meta.glob('./media/*.webp', { eager: true, import: 'default' })
 export const clip = (k) => ({ src: clips[`./media/${k}.mp4`], poster: posters[`./media/${k}.webp`] })
 export { default as qr } from './media/qr.webp'
+export { default as shirt } from './media/shirt.webp'
 
 export const contact = {
   phones: [
@@ -21,7 +22,7 @@ export const garments = ['Silk Sarees', 'Lehengas', 'Anarkalis', 'Sherwanis', 'S
 export const services = [
   { key: 'dry', title: 'Dry Cleaning', line: 'For fabrics that should never see a washing machine.', body: 'Silk, wool, velvet and embellished pieces, cleaned in Italian Firbimatic machines on a cycle chosen for the fabric.', clip: '107', symbol: 'dryclean' },
   { key: 'saree', title: 'Saree Care', line: 'Silk needs a gentler touch.', body: 'Zari borders and rich dyes checked first, cleaned gently, then folded by gloved hands with tissue between the layers.', clip: '148', symbol: 'hand' },
-  { key: 'bridal', title: 'Bridal & Couture', line: 'For the pieces that carry a memory.', body: 'Lehengas, anarkalis and sherwanis steamed rather than flattened, so gota, zari and stonework stand up again.', clip: '141', symbol: 'iron' },
+  { key: 'bridal', title: 'Bridal & Couture', line: 'For the pieces that carry a memory.', body: 'Lehengas, anarkalis and sherwanis steamed rather than flattened, so gota, zari and stonework stand up again.', clip: '147', symbol: 'iron' },
   { key: 'press', title: 'Steam Pressing', line: 'The difference is in the finish.', body: 'Steam tables and form finishers for crisp collars, clean pleats and shoulders that keep their shape.', clip: '142', symbol: 'iron' },
   { key: 'laundry', title: 'Laundry & Shirts', line: 'Everyday wear, done properly.', body: 'Shirts and cottons washed by colour and fabric, pressed, folded around a board and sealed.', clip: '136', symbol: 'wash' },
   { key: 'shoes', title: 'Shoe Care', line: 'Clean, condition, restore.', body: 'Sneakers and leather cleaned by hand at a dedicated shoe station, not thrown in a drum.', clip: '131', symbol: 'leather' },
@@ -37,29 +38,11 @@ export const chapters = [
   { key: 'return', title: 'Returned ready to wear', text: 'Each order goes back in Aspen packaging, ready to hang or wear the same day.', clip: '168', meta: 'Delivery' },
 ]
 
-export const wardrobe = [
-  { name: 'Silk Sarees', note: 'Kanjeevaram · Banarasi · Patola', clip: '149' },
-  { name: 'Lehengas & Anarkalis', note: 'Zari · gota · stonework', clip: '144' },
-  { name: 'Shirts & Formals', note: 'Collars · cuffs · crisp folds', clip: '165' },
-  { name: 'Festive Wear', note: 'Brocade · bandhani · silk', clip: '143' },
-  { name: 'Sneakers & Leather', note: 'Canvas · suede · leather', clip: '128' },
-]
-
 export const tech = [
   { label: 'Dry cleaning', name: 'Firbimatic', detail: 'Italian dry-cleaning machines with programmable cycles for delicate and structured garments.', clip: '114' },
   { label: 'Origin', name: 'Made in Italy', detail: 'The core cleaning line is imported from Italy and installed in our own studio.', clip: '116' },
   { label: 'Quality', name: 'Certified studio', detail: 'Our certificate of compliance referencing DIN EN ISO 9001 is displayed in the studio.', clip: '125' },
 ]
-
-export const quiz = {
-  question: 'Coffee on a white shirt. What do you do first?',
-  options: [
-    { key: 'A', label: 'Rub it hard', verdict: 'Rubbing pushes the stain deeper and roughs up the fibres.' },
-    { key: 'B', label: 'Pour hot water', verdict: 'Hot water can set some stains, especially if there is milk in the coffee.' },
-    { key: 'C', label: 'Blot it gently', verdict: 'Blot from the outside in with a clean cloth. Then send it to us.' },
-  ],
-  answer: 'C',
-}
 
 // Studio wall: four columns, each clip used nowhere else on the page.
 export const wall = [
