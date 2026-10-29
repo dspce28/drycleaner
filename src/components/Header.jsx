@@ -137,3 +137,20 @@ export function FloatingWhatsApp({ show }) {
     </AnimatePresence>
   )
 }
+
+// Bottom booking bar for phones, shown once the visitor is past the hero.
+export function MobileBar() {
+  const { scrollY } = useScroll()
+  const [show, setShow] = useState(false)
+  useMotionValueEvent(scrollY, 'change', (v) => setShow(v > window.innerHeight * 0.9))
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div className="mbar" initial={{ y: '110%' }} animate={{ y: 0 }} exit={{ y: '110%' }} transition={{ type: 'spring', stiffness: 260, damping: 28 }}>
+          <div><b>Pickup today?</b><span>Free collection across Ahmedabad</span></div>
+          <a className="btn btn--gold btn--sm" href={waLink('Hello Aspen Cleaners, I would like a pickup today.')} target="_blank" rel="noreferrer">Book on WhatsApp</a>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}

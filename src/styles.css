@@ -760,6 +760,26 @@ html.has-cursor, html.has-cursor a, html.has-cursor button { cursor: none; }
   .fab { height: 52px; padding: 0 13px; }
 }
 
+/* Mobile booking bar */
+.mbar { display: none; }
+@media (max-width: 600px) {
+  .fab { display: none !important; }
+  .mbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
+    padding: 12px max(16px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    background: rgba(246, 243, 236, 0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 -1px 0 var(--line);
+  }
+  .mbar div { display: grid; line-height: 1.25; }
+  .mbar b { font-family: var(--display); font-weight: 500; font-size: 1.1rem; color: var(--green); }
+  .mbar span { font-size: 0.78rem; color: var(--muted); }
+  .footer__base { padding-bottom: 90px; }
+}
+@media (max-width: 380px) {
+  .mbar span { display: none; }
+  .mbar .btn { padding: 10px 14px; font-size: 0.78rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }

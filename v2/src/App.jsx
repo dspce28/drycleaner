@@ -222,9 +222,9 @@ const MARK_MASK = `url("data:image/svg+xml;utf8,${encodeURIComponent(
 
 function Hero({ ready }) {
   const ref = useRef(null)
-  const [wide, setWide] = useState(() => matchMedia('(min-width: 760px)').matches)
+  const [wide, setWide] = useState(() => matchMedia('(min-aspect-ratio: 1/1)').matches)
   useEffect(() => {
-    const mq = matchMedia('(min-width: 760px)')
+    const mq = matchMedia('(min-aspect-ratio: 1/1)')
     const on = () => setWide(mq.matches)
     mq.addEventListener('change', on)
     return () => mq.removeEventListener('change', on)

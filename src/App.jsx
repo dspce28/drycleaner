@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, MotionConfig } from 'framer-motion'
 import Lenis from 'lenis'
 import { Cursor } from './components/Interaction.jsx'
-import { FloatingWhatsApp, Loader, Nav } from './components/Header.jsx'
+import { FloatingWhatsApp, Loader, MobileBar, Nav } from './components/Header.jsx'
 import { Hero, Marquee, Statement } from './components/Hero.jsx'
 import { Process, Services } from './components/Services.jsx'
 import { CareGuide, StainQuiz } from './components/Care.jsx'
@@ -44,6 +44,7 @@ export default function App() {
       </main>
       <Footer />
       <FloatingWhatsApp show={!loading} />
+      <MobileBar />
     </MotionConfig>
   )
 }
