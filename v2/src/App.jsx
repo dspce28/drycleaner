@@ -5,7 +5,7 @@ import {
 } from 'framer-motion'
 import Lenis from 'lenis'
 import {
-  chapters, clip, contact, garments, qr, services, shirt, slots, tech, wa, wall, wallLabels,
+  chapters, clip, contact, garments, qr, services, shirt, anarkali, slots, tech, wa, wall, wallLabels,
 } from './content.js'
 
 const ease = [0.76, 0, 0.24, 1]
@@ -308,7 +308,7 @@ function rand(seed) {
   return () => ((s = (s * 16807) % 2147483647) / 2147483647)
 }
 
-function StainLab() {
+function ScrubGame({ onNext }) {
   const box = useRef(null)
   const canvas = useRef(null)
   const fx = useRef(null)
@@ -441,10 +441,9 @@ function StainLab() {
   const reset = () => { setGone([]); setLast(null); setRound((r) => r + 1) }
 
   return (
-    <section className="stains" id="stains">
       <div className="wrap stains__grid">
         <div className="stains__copy">
-          <p className="eyebrow">The stain test</p>
+          <p className="eyebrow">The stain test · Round 1</p>
           <Lines text={'Stained?\nRelax.'} accent={1} />
           <Rise as="p" className="lede">Haldi at the sangeet. Chai at 4 pm. Biryani on a Sunday. Life happens on your clothes, and that is exactly what we are here for.</Rise>
           <Rise as="p" className="stains__rule" delay={0.1}>
@@ -460,7 +459,8 @@ function StainLab() {
                 <p><b>Spotless.</b> We do this every day, with real stains and without the rubbing.</p>
                 <div className="stains__ctas">
                   <Magnetic><a className="btn btn--gold" href={wa('Hello Aspen Cleaners, I have a stain that needs your help. Sending a photo.')} target="_blank" rel="noreferrer" data-cursor="Send">Send us your real stain →</a></Magnetic>
-                  <button className="text-btn" onClick={reset}>Stain it again</button>
+                  <button className="text-btn" onClick={onNext}>Round 2: find hidden stains →</button>
+                  <button className="text-btn text-btn--quiet" onClick={reset}>Stain it again</button>
                 </div>
               </motion.div>
             ) : last ? (
@@ -502,6 +502,146 @@ function StainLab() {
           </div>
         </div>
       </div>
+  )
+}
+
+/* ---------- Round 2: find the stains nobody can see yet ---------- */
+
+const HIDDEN = [
+  { id: 'oil', x: 0.28, y: 0.35, r: 0.075, label: 'Hair oil', note: 'Body oils grey a neckline slowly and hold on to dust.' },
+  { id: 'attar', x: 0.6, y: 0.41, r: 0.075, label: 'Attar', note: 'Perfume oils dry clear, then oxidise into brown marks.' },
+  { id: 'sweat', x: 0.15, y: 0.5, r: 0.08, label: 'Sweat', note: 'Invisible tonight. Yellow by next Diwali.' },
+  { id: 'sharbat', x: 0.3, y: 0.68, r: 0.08, label: 'Rooh Afza', note: 'Sugar dries clear. Iron it and it caramelises brown.' },
+  { id: 'makeup', x: 0.72, y: 0.6, r: 0.075, label: 'Foundation', note: 'From a hug. Skin tones hide on ivory, until they don’t.' },
+]
+
+function SpotGame({ onBack }) {
+  const stage = useRef(null)
+  const [pos, setPos] = useState(null)
+  const [size, setSize] = useState({ w: 0, h: 0 })
+  const [found, setFound] = useState([])
+  const [last, setLast] = useState(null)
+  const [near, setNear] = useState(null)
+  const timer = useRef(null)
+  const done = found.length === HIDDEN.length
+  const zoom = 2.4
+  const lens = size.w < 380 ? 120 : 160
+
+  useEffect(() => {
+    const m = () => setSize({ w: stage.current.clientWidth, h: stage.current.clientHeight })
+    m()
+    const ro = new ResizeObserver(m)
+    ro.observe(stage.current)
+    return () => { ro.disconnect(); clearTimeout(timer.current) }
+  }, [])
+
+  const look = (e) => {
+    const r = stage.current.getBoundingClientRect()
+    const x = e.clientX - r.left
+    const y = e.clientY - r.top
+    setPos({ x, y })
+    const hit = HIDDEN.find((h) => !found.includes(h.id) && Math.hypot(h.x * r.width - x, h.y * r.height - y) < h.r * r.width * 0.9)
+    if (hit?.id !== near) {
+      clearTimeout(timer.current)
+      setNear(hit?.id || null)
+      if (hit) {
+        timer.current = setTimeout(() => {
+          setFound((f) => (f.includes(hit.id) ? f : [...f, hit.id]))
+          setLast(hit)
+          setNear(null)
+        }, 650)
+      }
+    }
+  }
+  const reset = () => { setFound([]); setLast(null); setNear(null) }
+
+  return (
+    <div className="wrap stains__grid">
+      <div className="stains__copy">
+        <p className="eyebrow">The stain test · Round 2</p>
+        <Lines text={'Can’t see it?\nWe can.'} accent={1} />
+        <Rise as="p" className="lede">Some stains are invisible today and permanent tomorrow. Sugar, sweat, perfume and body oil dry clear, then turn yellow or brown with heat and time.</Rise>
+        <Rise as="p" className="stains__rule" delay={0.1}>
+          <b>This anarkali looks spotless.</b> It isn’t. Move the loupe over it and hold still when you think you have found something.
+        </Rise>
+        <div className="stains__meter" aria-live="polite">
+          <div className="stains__bar"><motion.span animate={{ width: `${(found.length / HIDDEN.length) * 100}%` }} transition={{ duration: 0.6, ease: soft }} /></div>
+          <span>{found.length} of {HIDDEN.length} hidden stains found</span>
+        </div>
+        <AnimatePresence mode="wait">
+          {done ? (
+            <motion.div key="done" className="stains__done" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <p><b>Found them all.</b> Our team checks every garment for these at inspection, before it goes anywhere near a machine.</p>
+              <div className="stains__ctas">
+                <Magnetic><a className="btn btn--gold" href="#book" data-cursor="Book">Schedule a pickup →</a></Magnetic>
+                <button className="text-btn" onClick={reset}>Play again</button>
+                <button className="text-btn text-btn--quiet" onClick={onBack}>Back to round 1</button>
+              </div>
+            </motion.div>
+          ) : last ? (
+            <motion.p key={last.id} className="stains__quip" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+              <span>{last.label}.</span> {last.note}
+            </motion.p>
+          ) : (
+            <motion.p key="hint" className="stains__quip stains__quip--hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              Hint: start where the garment touches skin.
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="stains__stage">
+        <div className="garment" ref={stage} data-cursor=""
+          onPointerMove={look} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); look(e) }}
+          onPointerLeave={(e) => { if (e.pointerType === 'mouse') { setPos(null); setNear(null); clearTimeout(timer.current) } }}>
+          <img src={anarkali} alt="An ivory anarkali held up by a gloved hand" draggable="false" />
+          {HIDDEN.filter((h) => found.includes(h.id)).map((h) => (
+            <motion.span key={h.id} className="found" style={{ left: `${h.x * 100}%`, top: `${h.y * 100}%`, width: `${h.r * 200}%` }}
+              initial={{ scale: 1.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 18 }}>
+              <b className={h.x > 0.62 ? 'is-right' : ''}>{h.label}</b>
+            </motion.span>
+          ))}
+          {!pos && !done && <span className="garment__hint">{matchMedia('(pointer: fine)').matches ? 'Move your mouse here' : 'Touch and drag to inspect'}</span>}
+          {pos && size.w > 0 && (
+            <div className={`loupe ${near ? 'is-near' : ''}`} style={{ width: lens, height: lens, left: pos.x - lens / 2, top: pos.y - lens / 2 }} aria-hidden="true">
+              <div className="loupe__inner" style={{ width: size.w * zoom, height: size.h * zoom, transform: `translate(${-(pos.x * zoom - lens / 2)}px, ${-(pos.y * zoom - lens / 2)}px)` }}>
+                <img src={anarkali} alt="" draggable="false" />
+                {HIDDEN.map((h) => (
+                  <span key={h.id} className={`ghost ${found.includes(h.id) ? 'is-found' : ''}`} style={{ left: `${h.x * 100}%`, top: `${h.y * 100}%`, width: `${h.r * 200}%` }} />
+                ))}
+              </div>
+              {near && <span className="loupe__ring" />}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StainLab() {
+  const [mode, setMode] = useState('scrub')
+  const go = (m) => {
+    setMode(m)
+    document.getElementById('stains')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+  return (
+    <section className="stains" id="stains">
+      <div className="wrap">
+        <div className="rounds" role="tablist" aria-label="Stain test rounds">
+          {[['scrub', 'Round 1 · Scrub it'], ['spot', 'Round 2 · Spot it']].map(([k, l]) => (
+            <button key={k} role="tab" aria-selected={mode === k} className={mode === k ? 'is-on' : ''} onClick={() => setMode(k)}>
+              {mode === k && <motion.span layoutId="round-bg" className="rounds__bg" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
+              <span className="rounds__label">{l}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <AnimatePresence mode="wait">
+        <motion.div key={mode} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.45, ease: soft }}>
+          {mode === 'scrub' ? <ScrubGame onNext={() => go('spot')} /> : <SpotGame onBack={() => go('scrub')} />}
+        </motion.div>
+      </AnimatePresence>
     </section>
   )
 }

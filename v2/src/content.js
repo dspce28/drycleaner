@@ -4,6 +4,7 @@ const posters = import.meta.glob('./media/*.webp', { eager: true, import: 'defau
 export const clip = (k) => ({ src: clips[`./media/${k}.mp4`], poster: posters[`./media/${k}.webp`] })
 export { default as qr } from './media/qr.webp'
 export { default as shirt } from './media/shirt.webp'
+export { default as anarkali } from './media/anarkali.webp'
 
 export const contact = {
   phones: [
