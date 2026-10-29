@@ -2,7 +2,8 @@ import { useMemo, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Arrow, CareSymbol, Mark, WhatsAppIcon, Wordmark } from './Brand.jsx'
 import { FadeUp, Magnetic, RevealText } from './Interaction.jsx'
-import { contact, img, promises, services, waLink } from '../data.js'
+import { contact, img, photoCredits, promises, services, waLink } from '../data.js'
+import { RevealImage, SilkThreads } from './Showcase.jsx'
 import tour from '../assets/tour.mp4'
 import qr from '../assets/qr.webp'
 
@@ -33,9 +34,9 @@ export function Studio() {
             <span className="studio__live"><i /> Studio tour</span>
           </motion.div>
           <motion.div className="studio__stack" style={{ y: up }}>
-            <figure><img src={img.lounge} alt="Customer lounge with two upholstered chairs" loading="lazy" /><figcaption>Lounge</figcaption></figure>
-            <figure><img src={img.spotting} alt="Stain treatment station with spotting agents" loading="lazy" /><figcaption>Spotting station</figcaption></figure>
-            <figure><img src={img.press} alt="Steam finishing table" loading="lazy" /><figcaption>Finishing floor</figcaption></figure>
+            <figure><RevealImage src={img.lounge} alt="Customer lounge with two upholstered chairs" /><figcaption>Lounge</figcaption></figure>
+            <figure><RevealImage src={img.spotting} alt="Stain treatment station with spotting agents" delay={0.1} /><figcaption>Spotting station</figcaption></figure>
+            <figure><RevealImage src={img.press} alt="Steam finishing table" delay={0.2} /><figcaption>Finishing floor</figcaption></figure>
           </motion.div>
         </div>
       </div>
@@ -85,6 +86,7 @@ export function Booking() {
 
   return (
     <section className="book" id="book">
+      <SilkThreads lines={16} opacity={0.4} />
       <div className="book__bg" aria-hidden="true"><Mark size={520} /></div>
       <div className="wrap book__grid">
         <div className="book__copy">
@@ -195,6 +197,7 @@ export function Footer() {
       </div>
       <div className="wrap footer__base">
         <span>© {new Date().getFullYear()} Aspen Cleaners, Ahmedabad</span>
+        <span className="footer__credits">Placeholder photography: {photoCredits.map((u, i) => <a key={u} href={u} target="_blank" rel="noreferrer">{i + 1}</a>)} (Unsplash)</span>
         <a href="#top">Back to top ↑</a>
       </div>
     </footer>

@@ -34,6 +34,7 @@ const links = [
   ['Services', '#services'],
   ['Process', '#process'],
   ['Care Guide', '#care-guide'],
+  ['Wardrobe', '#wardrobe'],
   ['Studio', '#studio'],
   ['Contact', '#book'],
 ]
@@ -108,15 +109,18 @@ export function Nav() {
   )
 }
 
-export function FloatingWhatsApp() {
-  const { scrollYProgress } = useScroll()
-  const [show, setShow] = useState(false)
-  useMotionValueEvent(scrollYProgress, 'change', (v) => setShow(v > 0.06))
+export function FloatingWhatsApp({ show }) {
+  const [intro, setIntro] = useState(true)
+  useEffect(() => {
+    if (!show) return
+    const t = setTimeout(() => setIntro(false), 4500)
+    return () => clearTimeout(t)
+  }, [show])
   return (
     <AnimatePresence>
       {show && (
         <motion.a
-          className="fab"
+          className={`fab ${intro ? 'is-intro' : ''}`}
           href={waLink('Hello Aspen Cleaners, I would like to schedule a pickup.')}
           target="_blank"
           rel="noreferrer"

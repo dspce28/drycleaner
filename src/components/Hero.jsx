@@ -3,6 +3,7 @@ import { motion, useMotionValue, useScroll, useSpring, useTransform, useVelocity
 import { Arrow, Mark, WhatsAppIcon } from './Brand.jsx'
 import { Magnetic, RevealText } from './Interaction.jsx'
 import { garments, img, waLink } from '../data.js'
+import { SilkThreads } from './Showcase.jsx'
 
 export function Hero({ ready }) {
   const ref = useRef(null)
@@ -24,6 +25,7 @@ export function Hero({ ready }) {
   return (
     <section className="hero" id="top" ref={ref} onPointerMove={onMove}>
       <div className="hero__glow" aria-hidden="true" />
+      <SilkThreads className="hero__threads" lines={12} opacity={0.42} />
       <div className="wrap hero__grid">
         <motion.div className="hero__copy" style={{ y: textY }}>
           <motion.p
@@ -38,7 +40,7 @@ export function Hero({ ready }) {
             <h1 className="hero__title">
               <RevealText text="Clothes worth" inView={false} className="line" delay={0.15} />
               <span className="line">
-                <RevealText text="caring" inView={false} className="serif-italic gold-text" delay={0.35} />{' '}
+                <RevealText text="caring" inView={false} className="serif-italic gold-text shimmer" delay={0.35} />{' '}
                 <RevealText text="for." inView={false} delay={0.45} />
               </span>
             </h1>
@@ -88,7 +90,7 @@ export function Hero({ ready }) {
             animate={ready ? { clipPath: 'inset(0% 0 0 0 round 999px 999px 24px 24px)' } : {}}
             transition={{ duration: 1.4, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
           >
-            <motion.img src={img.kurta} alt="Embroidered ivory kurta with a green dupatta on a wooden hanger, with an Aspen care tag" style={{ y: imgY, scale: imgScale }} />
+            <motion.img src={img.sareeGreen} alt="Woman in an emerald silk saree with a heavy gold zari border" style={{ y: imgY, scale: imgScale }} />
           </motion.div>
           <motion.div
             className="care-tag"

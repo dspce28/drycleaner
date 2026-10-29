@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Arrow, CareSymbol } from './Brand.jsx'
 import { FadeUp, RevealText } from './Interaction.jsx'
 import { fabrics, quiz, waLink } from '../data.js'
+import { SilkThreads } from './Showcase.jsx'
 
 const symbolNames = {
   dryclean: 'Professional dry clean', noWash: 'Do not wash', wash40: 'Wash at 40°C', ironLow: 'Iron, low heat',
@@ -53,6 +54,10 @@ export function CareGuide() {
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             >
+              <div className="care__visual">
+                <motion.div className="care__photo" initial={{ clipPath: 'inset(0 100% 0 0 round 200px 200px 18px 18px)' }} animate={{ clipPath: 'inset(0 0% 0 0 round 200px 200px 18px 18px)' }} transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}>
+                  <motion.img src={f.image} alt="" initial={{ scale: 1.2 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }} />
+                </motion.div>
               <div className="label-card">
                 <p className="label-card__head">CARE LABEL</p>
                 <p className="label-card__name">{f.name}</p>
@@ -65,6 +70,7 @@ export function CareGuide() {
                     </motion.li>
                   ))}
                 </ul>
+              </div>
               </div>
               <div className="care__how">
                 <p className="care__sub">How Aspen cares for it</p>
@@ -96,6 +102,7 @@ export function StainQuiz() {
   const correct = pick === quiz.answer
   return (
     <section className="quiz">
+      <SilkThreads lines={10} opacity={0.35} />
       <div className="wrap quiz__inner">
         <div>
           <p className="eyebrow eyebrow--light">Stain first aid</p>

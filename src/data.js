@@ -9,8 +9,15 @@ import spotting from './assets/spotting.webp'
 import machine from './assets/machine.webp'
 import racks from './assets/racks.webp'
 import kurta from './assets/kurta.webp'
+import sareeGreen from './assets/saree-green.webp'
+import bride from './assets/bride-lehenga.webp'
+import sareeChair from './assets/saree-chair.webp'
+import suit from './assets/suit.webp'
+import sareeIvory from './assets/saree-ivory.webp'
+import sareesWhite from './assets/sarees-white.webp'
+import iron from './assets/iron.webp'
 
-export const img = { storefront, reception, lounge, bags, press, shirts, packing, spotting, machine, racks, kurta }
+export const img = { storefront, reception, lounge, bags, press, shirts, packing, spotting, machine, racks, kurta, sareeGreen, bride, sareeChair, suit, sareeIvory, sareesWhite, iron }
 
 export const contact = {
   phones: [
@@ -38,7 +45,7 @@ export const services = [
     title: 'Dry Cleaning',
     line: 'For fabrics that should never see a washing machine.',
     body: 'Silk, wool, velvet, structured tailoring and embellished pieces, each cleaned in a controlled solvent cycle chosen for the fabric.',
-    image: machine,
+    image: suit,
     symbol: 'dryclean',
   },
   {
@@ -46,7 +53,7 @@ export const services = [
     title: 'Laundry',
     line: 'Everyday wear, washed properly.',
     body: 'Shirts, cottons, linens and home textiles, sorted by colour and fabric and washed at the right temperature.',
-    image: shirts,
+    image: sareesWhite,
     symbol: 'wash',
   },
   {
@@ -54,7 +61,7 @@ export const services = [
     title: 'Pressing & Finishing',
     line: 'The difference is in the finish.',
     body: 'Steam pressing and hand finishing for crisp collars, clean pleats and shoulders that keep their shape.',
-    image: press,
+    image: iron,
     symbol: 'iron',
   },
   {
@@ -62,7 +69,7 @@ export const services = [
     title: 'Bridal & Couture Care',
     line: 'For the pieces that carry a memory.',
     body: 'Lehengas, sherwanis and heavy zari work, cleaned by hand where needed, with embroidery and stones protected.',
-    image: kurta,
+    image: bride,
     symbol: 'hand',
   },
   {
@@ -78,7 +85,7 @@ export const services = [
     title: 'Curtains & Home',
     line: 'Care for every layer of the home.',
     body: 'Curtains, upholstery covers, rugs and quilts, cleaned to remove dust and allergens and steamed back into shape.',
-    image: packing,
+    image: sareeChair,
     symbol: 'tumble',
   },
 ]
@@ -95,6 +102,7 @@ export const process = [
 export const fabrics = [
   {
     key: 'silk',
+    image: sareeChair,
     name: 'Silk Saree',
     symbols: ['dryclean', 'noWash', 'ironLow'],
     note: 'Delicate fibres, zari borders and rich dyes.',
@@ -107,6 +115,7 @@ export const fabrics = [
   },
   {
     key: 'suit',
+    image: suit,
     name: 'Wool Suit',
     symbols: ['dryclean', 'noWash', 'ironMid'],
     note: 'Structured shoulders and a canvas that holds the shape.',
@@ -119,6 +128,7 @@ export const fabrics = [
   },
   {
     key: 'linen',
+    image: shirts,
     name: 'Linen Shirt',
     symbols: ['wash40', 'noTumble', 'ironHigh'],
     note: 'Breathable and strong, but it creases if you look at it.',
@@ -131,6 +141,7 @@ export const fabrics = [
   },
   {
     key: 'lehenga',
+    image: bride,
     name: 'Bridal Lehenga',
     symbols: ['dryclean', 'hand', 'noIron'],
     note: 'Heavy embroidery, stones, sequins and can-can layers.',
@@ -143,6 +154,7 @@ export const fabrics = [
   },
   {
     key: 'shirt',
+    image: sareesWhite,
     name: 'White Shirt',
     symbols: ['wash40', 'noBleach', 'ironHigh'],
     note: 'Collars and underarms show everything.',
@@ -170,4 +182,31 @@ export const promises = [
   { title: 'Care by fabric', text: 'Each garment is treated for what it is made of and how it is made.' },
   { title: 'Finished by hand', text: 'Collars, pleats and borders get the time they need.' },
   { title: 'Protective packing', text: 'Returned covered, hung or folded the way the garment prefers.' },
+]
+
+// Lines from the brand book's "Aspen Moments" pillar.
+export const moments = [
+  { line: 'Ready for the wedding.', sub: 'Bridal lehengas, sherwanis and heavy zari work, cleaned and steamed so the embroidery stands up again.', image: bride },
+  { line: 'Ready for Monday.', sub: 'Suits brushed, cleaned when they need it and pressed over a form.', image: suit },
+  { line: 'That first-wear feeling. Again.', sub: 'Drapes that fall the way they did the day you bought them.', image: sareeIvory },
+]
+
+export const wardrobe = [
+  { name: 'Silk Sarees', note: 'Kanjeevaram · Banarasi · Patola', image: sareeGreen },
+  { name: 'Bridal Lehengas', note: 'Zari · zardozi · stonework', image: bride },
+  { name: 'Suits & Bandhgalas', note: 'Wool · linen · velvet', image: suit },
+  { name: 'Kurtas & Dupattas', note: 'Chikankari · chanderi · organza', image: kurta },
+  { name: 'Drapes & Occasionwear', note: 'Georgette · chiffon · crepe', image: sareeIvory },
+  { name: 'Everyday Cottons', note: 'Shirts · kasavu · linens', image: sareesWhite },
+]
+
+// Placeholder photography (Unsplash License). Replace with Aspen's own shoot before launch.
+export const photoCredits = [
+  'https://unsplash.com/photos/Cr4BApFna1c',
+  'https://unsplash.com/photos/0XS_oZrq5HM',
+  'https://unsplash.com/photos/auTq92xjGOg',
+  'https://unsplash.com/photos/VsCBt8j-qg4',
+  'https://unsplash.com/photos/Y7r-VIL_vQM',
+  'https://unsplash.com/photos/ZZk2khywF6c',
+  'https://unsplash.com/photos/gma1zfS3_6E',
 ]

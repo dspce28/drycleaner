@@ -78,7 +78,7 @@ export function Process() {
     return () => window.removeEventListener('resize', measure)
   }, [])
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
-  const x = useTransform(scrollYProgress, [0.05, 0.95], [0, -distance])
+  const x = useTransform(scrollYProgress, [0.02, 0.98], [0, -distance])
   const bar = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
   return (
     <section className="process" id="process" ref={ref}>

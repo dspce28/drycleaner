@@ -7,6 +7,7 @@ import { Hero, Marquee, Statement } from './components/Hero.jsx'
 import { Process, Services } from './components/Services.jsx'
 import { CareGuide, StainQuiz } from './components/Care.jsx'
 import { Booking, Footer, Promises, Studio } from './components/Studio.jsx'
+import { Moments, Wardrobe } from './components/Showcase.jsx'
 
 export default function App() {
   const [loading, setLoading] = useState(true)
@@ -32,6 +33,8 @@ export default function App() {
         <Marquee />
         <Statement />
         <Services />
+        <Wardrobe />
+        <Moments />
         <Process />
         <CareGuide />
         <StainQuiz />
@@ -40,7 +43,7 @@ export default function App() {
         <Booking />
       </main>
       <Footer />
-      <FloatingWhatsApp />
+      <FloatingWhatsApp show={!loading} />
     </MotionConfig>
   )
 }
