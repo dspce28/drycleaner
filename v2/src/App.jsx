@@ -315,6 +315,8 @@ function ScrubGame({ onNext }) {
   const samples = useRef({})
   const bubbles = useRef([])
   const [gone, setGone] = useState([])
+  // Source of truth for finished stains; state lags behind fast pointer events.
+  const goneIds = useRef(new Set())
   const [last, setLast] = useState(null)
   const [round, setRound] = useState(0)
   const done = gone.length === STAINS.length
@@ -368,7 +370,7 @@ function ScrubGame({ onNext }) {
 
   useEffect(() => {
     paint()
-    const ro = new ResizeObserver(() => { setGone([]); paint() })
+    const ro = new ResizeObserver(() => { goneIds.current.clear(); setGone([]); paint() })
     ro.observe(box.current)
     return () => ro.disconnect()
   }, [paint])
@@ -418,14 +420,14 @@ function ScrubGame({ onNext }) {
       ctx.beginPath(); ctx.arc(px, py, brush, 0, Math.PI * 2); ctx.fill()
       for (const s of STAINS) {
         const smp = samples.current[s.id]
-        if (!smp || gone.includes(s.id)) continue
+        if (!smp || goneIds.current.has(s.id)) continue
         smp.pts.forEach(([sx, sy], k) => { if (Math.hypot(sx - px, sy - py) < brush * 0.8) smp.hit.add(k) })
       }
     }
     ctx.globalCompositeOperation = 'source-over'
     lastPt.current = [x, y]
     if (Math.random() < 0.5) bubbles.current.push({ x: x + (Math.random() - 0.5) * brush, y, r: 2 + Math.random() * 6, vy: 0.6 + Math.random() * 1.2, life: 40 + Math.random() * 30 })
-    const fresh = STAINS.filter((s) => !gone.includes(s.id) && samples.current[s.id].hit.size / samples.current[s.id].pts.length > 0.7)
+    const fresh = STAINS.filter((s) => !goneIds.current.has(s.id) && samples.current[s.id].hit.size / samples.current[s.id].pts.length > 0.7)
     if (fresh.length) {
       fresh.forEach((s) => {
         // wipe whatever is left of a finished stain
@@ -433,12 +435,13 @@ function ScrubGame({ onNext }) {
         const R = s.r * w * 2.2
         ctx.clearRect(s.x * w - R, s.y * box.current.clientHeight - R, R * 2, R * 2)
       })
-      setGone((g) => [...g, ...fresh.map((s) => s.id)])
+      fresh.forEach((s) => goneIds.current.add(s.id))
+      setGone([...goneIds.current])
       setLast(fresh[fresh.length - 1])
     }
   }
 
-  const reset = () => { setGone([]); setLast(null); setRound((r) => r + 1) }
+  const reset = () => { goneIds.current.clear(); setGone([]); setLast(null); setRound((r) => r + 1) }
 
   return (
       <div className="wrap stains__grid">
