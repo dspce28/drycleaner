@@ -199,19 +199,16 @@ function Nav() {
 function Hero({ ready }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const yA = useTransform(scrollYProgress, [0, 1], ['0%', '-14%'])
-  const yB = useTransform(scrollYProgress, [0, 1], ['0%', '10%'])
-  const yC = useTransform(scrollYProgress, [0, 1], ['0%', '-24%'])
-  const tx = useSpring(0, { stiffness: 60, damping: 18 })
-  const ty = useSpring(0, { stiffness: 60, damping: 18 })
-  const frames = [
-    { k: '153', y: yA, cls: 'a', label: 'Folding a silk saree with gloved hands' },
-    { k: '147', y: yB, cls: 'b', label: 'Steaming an embroidered anarkali' },
-    { k: '168', y: yC, cls: 'c', label: 'A shirt sealed in Aspen packaging' },
-  ]
+  const archY = useTransform(scrollYProgress, [0, 1], ['0%', '12%'])
+  const vidScale = useTransform(scrollYProgress, [0, 1], [1, 1.15])
+  const orbY = useTransform(scrollYProgress, [0, 1], ['0%', '-40%'])
+  const ghostX = useTransform(scrollYProgress, [0, 1], ['0%', '-12%'])
+  const rx = useSpring(0, { stiffness: 70, damping: 18 })
+  const ry = useSpring(0, { stiffness: 70, damping: 18 })
   return (
     <section className="hero" id="top" ref={ref}
-      onPointerMove={(e) => { tx.set((e.clientX / innerWidth - 0.5) * -24); ty.set((e.clientY / innerHeight - 0.5) * -16) }}>
+      onPointerMove={(e) => { ry.set((e.clientX / innerWidth - 0.5) * 8); rx.set((0.5 - e.clientY / innerHeight) * 6) }}>
+      <motion.div className="hero__ghost" style={{ x: ghostX }} aria-hidden="true">ASPEN</motion.div>
       <div className="hero__copy">
         <motion.p className="kicker" initial={{ opacity: 0, y: 12 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1, duration: 0.8 }}>
           <Mark size={14} /> Dry cleaning &amp; garment care · Ahmedabad
@@ -225,44 +222,60 @@ function Hero({ ready }) {
           ))}
         </h1>
         <motion.p className="hero__lede" initial={{ opacity: 0, y: 16 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.6, duration: 0.9 }}>
-          Silk sarees, bridal lehengas and everyday shirts, cleaned in Italian machines, finished by hand and packed with gloves. Collected from your door, returned ready to wear.
+          Silk sarees, bridal lehengas and everyday shirts, cleaned in Italian machines, finished by hand and packed with gloves.
         </motion.p>
         <motion.div className="hero__ctas" initial={{ opacity: 0, y: 16 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.75, duration: 0.9 }}>
           <Magnetic><a className="btn btn--gold btn--lg" href="#book" data-cursor="Book">Schedule a pickup →</a></Magnetic>
-          <a className="btn btn--line btn--lg" href="#process" data-cursor="Watch">Watch the process</a>
+          <a className="play" href="#process" data-cursor="Watch">
+            <span className="play__ring"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor" /></svg></span>
+            Watch the process
+          </a>
         </motion.div>
-        <motion.ul className="hero__facts" initial={{ opacity: 0 }} animate={ready ? { opacity: 1 } : {}} transition={{ delay: 1, duration: 1 }}>
-          <li><b>Free</b> pickup &amp; delivery</li>
-          <li><b>Italian</b> Firbimatic machines</li>
-          <li><b>Gloved</b> packing</li>
-        </motion.ul>
       </div>
-      <motion.div className="hero__stage" style={{ x: tx, y: ty }}>
-        {frames.map((f, i) => (
-          <motion.div key={f.k} className={`hero__frame hero__frame--${f.cls}`} style={{ y: f.y }}
-            initial={{ clipPath: 'inset(100% 0 0 0 round 999px 999px 24px 24px)' }}
-            animate={ready ? { clipPath: 'inset(0% 0 0 0 round 999px 999px 24px 24px)' } : {}}
-            transition={{ duration: 1.3, delay: 0.15 + i * 0.15, ease }}>
-            <Clip k={f.k} eager label={f.label} />
-          </motion.div>
-        ))}
-        <motion.div className="tag" drag dragSnapToOrigin dragElastic={0.5} whileDrag={{ rotate: 10, scale: 1.06 }} data-cursor="Drag"
-          initial={{ opacity: 0, y: -30, rotate: -14 }} animate={ready ? { opacity: 1, y: 0, rotate: [-14, 7, -4, 2, 0] } : {}}
-          transition={{ delay: 1.1, duration: 2.2 }}>
-          <span className="tag__hole" />
-          <Mark size={18} />
-          <b>ASPEN</b>
-          <span>Expert care.<br />Impeccable finish.</span>
-          <em>No. 001 · AHD</em>
-        </motion.div>
-        <div className="badge" aria-hidden="true">
-          <svg viewBox="0 0 120 120">
-            <defs><path id="circ" d="M60 60 m-46 0 a46 46 0 1 1 92 0 a46 46 0 1 1 -92 0" /></defs>
-            <text><textPath href="#circ">MADE IN ITALY · HAND FINISHED · MADE IN ITALY · HAND FINISHED · </textPath></text>
+
+      <div className="hero__stage">
+        <motion.div className="hero__tilt" style={{ rotateX: rx, rotateY: ry, y: archY }}>
+          <svg className="hero__outline" viewBox="0 0 400 560" preserveAspectRatio="none" aria-hidden="true">
+            <motion.path d="M4 556 V200 A196 196 0 0 1 396 200 V556 Z" fill="none" stroke="var(--gold)" strokeWidth="1.5"
+              vectorEffect="non-scaling-stroke" initial={{ pathLength: 0 }} animate={ready ? { pathLength: 1 } : {}} transition={{ duration: 2.2, delay: 0.4, ease: 'easeInOut' }} />
           </svg>
-          <span><Mark size={20} light /></span>
-        </div>
-      </motion.div>
+          <motion.div className="hero__arch"
+            initial={{ clipPath: 'inset(100% 0 0 0 round 999px 999px 0 0)' }}
+            animate={ready ? { clipPath: 'inset(0% 0 0 0 round 999px 999px 0 0)' } : {}}
+            transition={{ duration: 1.4, delay: 0.15, ease }}>
+            <motion.div className="hero__scale" style={{ scale: vidScale }}><Clip k="147" eager label="Steaming an embroidered anarkali by hand" /></motion.div>
+            <span className="hero__caption"><i /> Live from the finishing floor</span>
+          </motion.div>
+        </motion.div>
+
+        <motion.div className="orb" style={{ y: orbY }} initial={{ scale: 0, rotate: -30 }} animate={ready ? { scale: 1, rotate: 0 } : {}}
+          transition={{ delay: 1, type: 'spring', stiffness: 120, damping: 16 }}>
+          <svg className="orb__ring" viewBox="0 0 200 200" aria-hidden="true">
+            <defs><path id="orbPath" d="M100 100 m-86 0 a86 86 0 1 1 172 0 a86 86 0 1 1 -172 0" /></defs>
+            <text><textPath href="#orbPath">GLOVED PACKING · HAND FINISHED · MADE IN ITALY · </textPath></text>
+          </svg>
+          <div className="orb__vid"><Clip k="153" eager label="Folding a silk saree with gloved hands" /></div>
+        </motion.div>
+
+        <motion.div className="hanger" initial={{ opacity: 0, y: -40 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 1.3, duration: 0.8 }}>
+          <span className="hanger__thread" />
+          <motion.div className="tag" drag dragSnapToOrigin dragElastic={0.5} whileDrag={{ scale: 1.06 }} data-cursor="Drag"
+            animate={ready ? { rotate: [10, -7, 4, -2, 0] } : {}} transition={{ delay: 1.3, duration: 2.6 }}>
+            <span className="tag__hole" />
+            <Mark size={18} />
+            <b>ASPEN</b>
+            <span>Expert care.<br />Impeccable finish.</span>
+            <em>No. 001 · AHD</em>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      <motion.ul className="hero__ribbon" initial={{ opacity: 0, y: 20 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 1.1, duration: 1 }}>
+        <li><b>Free</b> pickup &amp; delivery</li>
+        <li><b>Italian</b> Firbimatic machines</li>
+        <li><b>Hand</b> finished</li>
+        <li><b>Gloved</b> packing</li>
+      </motion.ul>
     </section>
   )
 }
@@ -318,10 +331,36 @@ function Statement() {
   )
 }
 
-/* ---------- Services: expanding video panels ---------- */
+/* ---------- Services: care-label cards that flip ---------- */
+
+function LabelCard({ s, i }) {
+  const [flipped, setFlipped] = useState(false)
+  return (
+    <motion.div className="lc" initial={{ opacity: 0, y: 60, rotate: i % 2 ? 2 : -2 }} whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+      viewport={{ once: true, margin: '-8% 0px' }} transition={{ duration: 1, delay: (i % 3) * 0.1, ease: soft }}
+      onPointerEnter={(e) => e.pointerType === 'mouse' && setFlipped(true)} onPointerLeave={(e) => e.pointerType === 'mouse' && setFlipped(false)}>
+      <span className="lc__loop" aria-hidden="true" />
+      <motion.div className="lc__inner" animate={{ rotateY: flipped ? 180 : 0 }} transition={{ duration: 0.9, ease }}>
+        <div className="lc__face lc__front">
+          <div className="lc__top"><span className="num">{pad(i + 1)}</span><span className="lc__sym"><Symbol type={s.symbol} size={26} /></span></div>
+          <div className="lc__window"><Clip k={s.clip} label={s.title} /></div>
+          <h3>{s.title}</h3>
+          <p>{s.line}</p>
+          <button className="lc__flip" onClick={() => setFlipped(true)} aria-label={`More about ${s.title}`}>How we care ↻</button>
+        </div>
+        <div className="lc__face lc__back" aria-hidden={!flipped}>
+          <span className="num">{pad(i + 1)} · Care method</span>
+          <h3>{s.title}</h3>
+          <p>{s.body}</p>
+          <a className="btn btn--gold btn--sm" href={wa(`Hello Aspen Cleaners, I would like to book ${s.title}.`)} target="_blank" rel="noreferrer" tabIndex={flipped ? 0 : -1}>Book {s.title.toLowerCase()} →</a>
+          <button className="lc__flip lc__flip--back" onClick={() => setFlipped(false)} tabIndex={flipped ? 0 : -1}>↺ Back</button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
 
 function Services() {
-  const [active, setActive] = useState(0)
   return (
     <section className="services" id="services">
       <div className="wrap">
@@ -330,33 +369,9 @@ function Services() {
             <p className="eyebrow">What we care for</p>
             <Lines text={'Because every fabric\nis different.'} accent={1} />
           </div>
-          <Rise as="p" className="lede">Six services, one standard. Hover a service to see it being done in our studio.</Rise>
+          <Rise as="p" className="lede">Every service has its own care label. Hover a label, or tap it on your phone, to turn it over and see how we work.</Rise>
         </div>
-        <div className="panels">
-          {services.map((s, i) => {
-            const on = i === active
-            return (
-              <motion.article key={s.key} layout transition={{ layout: { duration: 0.7, ease } }}
-                className={`panel ${on ? 'is-on' : ''}`} tabIndex={0} data-cursor={on ? '' : 'Open'}
-                onPointerEnter={() => setActive(i)} onFocus={() => setActive(i)} onClick={() => setActive(i)}>
-                <Clip k={s.clip} label={s.title} playing={on} />
-                <div className="panel__shade" />
-                <span className="panel__num">{pad(i + 1)}</span>
-                <h3 className="panel__title">{s.title}</h3>
-                <AnimatePresence mode="wait">
-                  {on && (
-                    <motion.div className="panel__body" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0, transition: { delay: 0.35, duration: 0.6 } }} exit={{ opacity: 0, transition: { duration: 0.15 } }}>
-                      <span className="panel__sym"><Symbol type={s.symbol} /></span>
-                      <p className="panel__line">{s.line}</p>
-                      <p className="panel__text">{s.body}</p>
-                      <a className="link" href={wa(`Hello Aspen Cleaners, I would like to book ${s.title}.`)} target="_blank" rel="noreferrer">Book {s.title.toLowerCase()} →</a>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.article>
-            )
-          })}
-        </div>
+        <div className="labels">{services.map((s, i) => <LabelCard s={s} i={i} key={s.key} />)}</div>
       </div>
     </section>
   )
