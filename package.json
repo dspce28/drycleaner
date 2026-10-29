@@ -5,7 +5,9 @@
     "dev": "vite",
     "build": "vite build",
     "build:preview": "vite build --mode preview && node scripts/to-artifact.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:v2": "vite --config vite.v2.config.js",
+    "build:v2": "vite build --config vite.v2.config.js"
   },
   "repository": {
     "type": "git",
