@@ -37,7 +37,7 @@ function Mark({ size = 28, light = false }) {
   return (
     <svg width={size} height={size * 1.15} viewBox="258 42 300 360" aria-hidden="true">
       <path d="M405 50 L506 288 C440 282 340 318 268 392 Z" fill="var(--gold)" />
-      <path d="M396 354 C440 326 486 312 516 312 L549 394 C512 366 455 350 396 354 Z" fill={light ? 'var(--paper)' : 'var(--green)'} />
+      <path d="M396 354 C440 326 486 312 516 312 L549 394 C512 366 455 350 396 354 Z" fill={light ? '#f6f3ec' : 'var(--mark)'} />
     </svg>
   )
 }
@@ -175,6 +175,7 @@ function Nav() {
           {links.map(([l, h]) => <a key={h} href={h}><span data-text={l}>{l}</span></a>)}
         </nav>
         <div className="nav__right">
+          <ThemeSwitch />
           <Magnetic><a className="btn btn--gold btn--sm" href="#book" data-cursor="Book">Schedule a pickup</a></Magnetic>
           <button className={`burger ${open ? 'is-open' : ''}`} onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}><span /><span /></button>
         </div>
@@ -191,6 +192,25 @@ function Nav() {
         )}
       </AnimatePresence>
     </>
+  )
+}
+
+function ThemeSwitch() {
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark')
+  const flip = () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    document.documentElement.dataset.theme = next
+    try { localStorage.setItem('aspen-theme', next) } catch { /* storage blocked: choice lasts for this visit */ }
+    setTheme(next)
+  }
+  return (
+    <button className="theme" onClick={flip} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} data-cursor={theme === 'dark' ? 'Light' : 'Dark'}>
+      <motion.span className="theme__knob" layout transition={{ type: 'spring', stiffness: 500, damping: 30 }}>
+        {theme === 'dark'
+          ? <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></svg>
+          : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>}
+      </motion.span>
+    </button>
   )
 }
 
@@ -254,7 +274,7 @@ function Hero({ ready }) {
             <defs><path id="orbPath" d="M100 100 m-86 0 a86 86 0 1 1 172 0 a86 86 0 1 1 -172 0" /></defs>
             <text><textPath href="#orbPath">GLOVED PACKING · HAND FINISHED · MADE IN ITALY · </textPath></text>
           </svg>
-          <div className="orb__vid"><Clip k="153" eager label="Folding a silk saree with gloved hands" /></div>
+          <div className="orb__vid"><Clip k="150" eager label="A purple silk saree with gold motifs" /></div>
         </motion.div>
 
         <motion.div className="hanger" initial={{ opacity: 0, y: -40 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 1.3, duration: 0.8 }}>
@@ -545,7 +565,7 @@ function Finishing() {
           <Lines text={'The difference\nis in the finish.'} accent={1} />
           <Rise as="p" className="lede">Borders, gota, pleats and collars are steamed and set by hand, so the garment comes back the way it was made to fall.</Rise>
           <motion.div className="finish__thumbs" style={{ y }}>
-            <figure><Clip k="143" label="Steam press table" /><figcaption>Steam press</figcaption></figure>
+            <figure><Clip k="132" label="Pressing a jacket on the form" /><figcaption>Form press</figcaption></figure>
             <figure><Clip k="163" label="Folding a white shirt" /><figcaption>Shirt fold</figcaption></figure>
           </motion.div>
         </div>
@@ -592,46 +612,45 @@ function Quiz() {
   )
 }
 
-/* ---------- Studio reel ---------- */
+/* ---------- Studio wall: drifting video columns ---------- */
 
 function Reel() {
-  const track = useRef(null)
-  const view = useRef(null)
-  const [limit, setLimit] = useState(0)
   const [open, setOpen] = useState(null)
-  const dragged = useRef(false)
   useEffect(() => {
-    const m = () => setLimit(Math.max(0, track.current.scrollWidth - view.current.clientWidth))
-    m(); addEventListener('resize', m)
     const esc = (e) => e.key === 'Escape' && setOpen(null)
     addEventListener('keydown', esc)
-    return () => { removeEventListener('resize', m); removeEventListener('keydown', esc) }
+    return () => removeEventListener('keydown', esc)
   }, [])
   return (
-    <section className="reel">
+    <section className="reel" id="studio-wall">
       <div className="wrap head head--split">
         <div>
           <p className="eyebrow eyebrow--light">Studio reel</p>
           <Lines text={'No stock footage.\nJust our floor.'} className="h2 h2--light" accent={1} />
         </div>
-        <p className="lede lede--light">Drag to look around. Tap any frame to watch it full size.</p>
+        <p className="lede lede--light">Twelve moments from the Aspen studio. Hover to pause a column, click any clip to watch it full size.</p>
       </div>
-      <div className="reel__view" ref={view}>
-        <motion.div className="reel__track" ref={track} drag="x" dragConstraints={{ left: -limit, right: 0 }} dragElastic={0.08}
-          onDragStart={() => { dragged.current = true }} onDragEnd={() => setTimeout(() => { dragged.current = false }, 60)} data-cursor="Drag">
-          {wall.map((k, i) => (
-            <motion.button key={k} className={`reel__item ${i % 2 ? 'is-low' : ''}`} layoutId={`reel-${k}`} whileHover={{ y: -8 }}
-              onClick={() => !dragged.current && setOpen(k)} aria-label={`Watch ${wallLabels[k]}`}>
-              <Clip k={k} label={wallLabels[k]} />
-              <span className="reel__label">{pad(i + 1)} · {wallLabels[k]}</span>
-            </motion.button>
+      <div className="wrap">
+        <div className="wall">
+          {wall.map((col, c) => (
+            <div className={`wall__col ${c % 2 ? 'is-down' : ''}`} key={c} style={{ '--dur': `${34 + c * 6}s` }}>
+              <div className="wall__track">
+                {[...col, ...col].map((k, j) => (
+                  <button key={`${k}-${j}`} className="wall__item" onClick={() => setOpen(k)} data-cursor="Play" aria-label={`Watch ${wallLabels[k]}`} tabIndex={j < col.length ? 0 : -1} aria-hidden={j >= col.length || undefined}>
+                    <Clip k={k} label={wallLabels[k]} />
+                    <span className="wall__label">{wallLabels[k]}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
       <AnimatePresence>
         {open && (
           <motion.div className="lightbox" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(null)}>
-            <motion.div className="lightbox__frame" layoutId={`reel-${open}`} onClick={(e) => e.stopPropagation()}>
+            <motion.div className="lightbox__frame" initial={{ scale: 0.85, y: 40 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.5, ease: soft }} onClick={(e) => e.stopPropagation()}>
               <Clip k={open} eager label={wallLabels[open]} />
             </motion.div>
             <p className="lightbox__label">{wallLabels[open]}</p>
@@ -674,7 +693,7 @@ function Pricing() {
           </Magnetic>
         </div>
         <motion.div className="pricing__pack" style={{ rotate, y }}>
-          <Clip k="168" label="A shirt sealed in Aspen packaging" />
+          <Clip k="166" label="A shirt being sealed in Aspen packaging" />
           <span className="pricing__chip">Returned sealed &amp; tagged</span>
         </motion.div>
       </div>
