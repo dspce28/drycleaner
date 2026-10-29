@@ -37,8 +37,9 @@ export const services = [
   'Dry Cleaning', 'Laundry', 'Steam Pressing', 'Bridal & Couture', 'Sarees & Lehengas', 'Suits & Blazers', 'Shoe Care', 'Curtains & Home',
 ]
 
-export const wall = ['014', '051', '143', '145', '163', '128', '131', '134', '139', '090', '153', '040']
+export const wall = ['open', '014', '051', '143', '145', '163', 'rack', '128', '131', '134', '139', '090', '153', '040']
 export const wallLabels = {
+  open: 'Opening day', rack: 'Ready for collection',
   '014': 'Arrival', '051': 'Spotting', '143': 'Steam press', '145': 'Steaming an anarkali', '163': 'Shirt fold',
   '128': 'Sneakers in', '131': 'Shoe care station', '134': 'Sneaker clean', '139': 'The studio at night', '090': 'Inside the drum',
   '153': 'Gloved packing', '040': 'Tagging',
