@@ -21,7 +21,6 @@
   --chip-bg: rgba(246, 243, 236, 0.92);
   --ghost: rgba(17, 60, 38, 0.1);
   --stitch: rgba(17, 60, 38, 0.22);
-  --mark: #113c26;
 
   --display: 'Fraunces', Georgia, 'Times New Roman', serif;
   --body: 'Manrope', 'Segoe UI', system-ui, sans-serif;
@@ -45,7 +44,6 @@
   --chip-bg: rgba(10, 23, 16, 0.85);
   --ghost: rgba(241, 234, 217, 0.07);
   --stitch: rgba(241, 234, 217, 0.24);
-  --mark: #f1ead9;
   color-scheme: dark;
 }
 
@@ -121,8 +119,11 @@ img, video { display: block; max-width: 100%; }
 /* Wordmark */
 .wordmark { display: inline-flex; align-items: center; gap: 10px; }
 .wordmark > span { display: grid; line-height: 1; }
-.wordmark b { font-family: var(--brand); font-weight: 800; font-size: 1.2rem; letter-spacing: 0.05em; color: var(--heading); }
-.wordmark i { font-family: var(--brand); font-style: normal; font-weight: 700; font-size: 0.55rem; letter-spacing: 0.42em; color: var(--accent-ink); margin-top: 4px; }
+.wordmark b { font-family: var(--brand); font-weight: 800; font-size: 1.2rem; letter-spacing: 0.05em; color: #113C26; }
+.wordmark i { font-family: var(--brand); font-style: normal; font-weight: 700; font-size: 0.55rem; letter-spacing: 0.42em; color: #D7A233; margin-top: 4px; }
+:root[data-theme="dark"] .wordmark { padding: 7px 14px 7px 10px; border-radius: 12px; background: #f6f3ec; box-shadow: 0 6px 20px -10px rgba(0, 0, 0, 0.6); }
+.intro__plate { display: grid; place-items: center; width: 116px; height: 116px; border-radius: 50%; background: #f6f3ec; box-shadow: 0 0 0 1px rgba(215, 162, 51, 0.5), 0 0 0 10px rgba(246, 243, 236, 0.06); }
+.marquee__dot { font-style: normal; font-size: 0.5em; color: #D7A233; }
 
 /* Cursor + grain */
 html.has-cursor, html.has-cursor a, html.has-cursor button { cursor: none; }

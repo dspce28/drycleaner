@@ -33,19 +33,24 @@ function Clip({ k, className = '', eager = false, label, playing = true }) {
   )
 }
 
-function Mark({ size = 28, light = false }) {
+// The Aspen mark in its brand colours only: Aspen Gold peak, Aspen Green sweep. Never recoloured.
+const BRAND_GOLD = '#D7A233'
+const BRAND_GREEN = '#113C26'
+
+function Mark({ size = 28 }) {
   return (
     <svg width={size} height={size * 1.15} viewBox="258 42 300 360" aria-hidden="true">
-      <path d="M405 50 L506 288 C440 282 340 318 268 392 Z" fill="var(--gold)" />
-      <path d="M396 354 C440 326 486 312 516 312 L549 394 C512 366 455 350 396 354 Z" fill={light ? '#f6f3ec' : 'var(--mark)'} />
+      <path d="M405 50 L506 288 C440 282 340 318 268 392 Z" fill={BRAND_GOLD} />
+      <path d="M396 354 C440 326 486 312 516 312 L549 394 C512 366 455 350 396 354 Z" fill={BRAND_GREEN} />
     </svg>
   )
 }
 
-function Wordmark({ light = false }) {
+// On dark backgrounds the logo sits on an ivory plate so its green stays visible.
+function Wordmark() {
   return (
-    <span className={`wordmark ${light ? 'is-light' : ''}`}>
-      <Mark size={26} light={light} />
+    <span className="wordmark">
+      <Mark size={26} />
       <span><b>ASPEN</b><i>CLEANERS</i></span>
     </span>
   )
@@ -145,7 +150,7 @@ function Intro({ onDone }) {
   return (
     <motion.div className="intro" exit={{ clipPath: 'inset(0 0 100% 0)', transition: { duration: 0.9, ease } }}>
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, ease: soft }}>
-        <Mark size={64} light />
+        <span className="intro__plate"><Mark size={64} /></span>
       </motion.div>
       <motion.p className="intro__line" initial={{ opacity: 0, letterSpacing: '0.5em' }} animate={{ opacity: 1, letterSpacing: '0.26em' }} transition={{ delay: 0.3, duration: 1 }}>
         CARE FOR WHAT MATTERS
@@ -667,7 +672,7 @@ function Marquee() {
     base.set(v)
   })
   const x = useTransform(base, (v) => `${v}%`)
-  const row = garments.map((g) => <span key={g}>{g}<Mark size={15} light /></span>)
+  const row = garments.map((g) => <span key={g}>{g}<i className="marquee__dot" aria-hidden="true">✦</i></span>)
   return (
     <div className="marquee" aria-label={`We care for ${garments.join(', ')}`}>
       <motion.div className="marquee__track" style={{ x }} aria-hidden="true">{row}{row}</motion.div>
