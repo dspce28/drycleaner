@@ -179,7 +179,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ---------- Loader ---------- */
 .loader {
-  --mark-green: var(--paper);
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -188,6 +187,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   background: var(--green-deep);
   color: var(--paper);
 }
+.loader__plate { display: grid; place-items: center; width: 132px; height: 132px; border-radius: 50%; background: #f6f3ec; box-shadow: 0 0 0 1px rgba(215, 162, 51, 0.6), 0 0 0 12px rgba(246, 243, 236, 0.06); }
+.marquee__dot { font-style: normal; font-size: 0.5em; color: #d7a233; }
 .loader__inner { display: grid; justify-items: center; gap: 26px; }
 .loader__line { margin: 0; font-family: var(--brand); font-weight: 600; font-size: 0.7rem; color: var(--gold-soft); text-align: center; padding-inline: 16px; }
 
@@ -346,7 +347,7 @@ html.has-cursor, html.has-cursor a, html.has-cursor button { cursor: none; }
 .badge { position: absolute; top: 4%; right: -8%; width: 118px; height: 118px; z-index: 2; }
 .badge svg { width: 100%; height: 100%; animation: spin 22s linear infinite; }
 .badge text { font-family: var(--brand); font-weight: 700; font-size: 8.4px; letter-spacing: 0.2em; fill: var(--green); }
-.badge__core { position: absolute; inset: 30px; border-radius: 50%; background: var(--green); display: grid; place-items: center; --mark-green: var(--paper); }
+.badge__core { position: absolute; inset: 30px; border-radius: 50%; background: #f6f3ec; box-shadow: inset 0 0 0 1.5px var(--gold); display: grid; place-items: center; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .scroll-cue { position: absolute; left: 50%; bottom: 22px; width: 24px; height: 40px; border: 1px solid var(--line); border-radius: 20px; transform: translateX(-50%); }
@@ -366,7 +367,6 @@ html.has-cursor, html.has-cursor a, html.has-cursor button { cursor: none; }
   font-weight: 300;
   font-size: clamp(1.8rem, 4.2vw, 3.8rem);
   white-space: nowrap;
-  --mark-green: var(--paper);
 }
 
 /* ---------- Statement ---------- */
@@ -547,8 +547,6 @@ html.has-cursor, html.has-cursor a, html.has-cursor button { cursor: none; }
 
 /* ---------- Booking ---------- */
 .book { position: relative; background: var(--green); color: var(--paper); padding-block: clamp(90px, 12vw, 160px); overflow: hidden; }
-.book__bg { position: absolute; right: -8%; bottom: -18%; opacity: 0.07; --mark-green: var(--paper); pointer-events: none; }
-.book__bg svg { width: min(60vw, 620px); height: auto; }
 .book__grid { position: relative; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(36px, 6vw, 96px); align-items: start; }
 .book__copy { min-width: 0; }
 .book__lede { margin: 26px 0 0; max-width: 42ch; color: rgba(246, 243, 236, 0.78); font-size: 1.06rem; }

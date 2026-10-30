@@ -16,7 +16,7 @@ export function Loader({ onDone }) {
       exit={{ clipPath: 'inset(0 0 100% 0)', transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } }}
     >
       <div className="loader__inner">
-        <Mark size={74} draw />
+        <span className="loader__plate"><Mark size={74} draw /></span>
         <motion.p
           className="loader__line"
           initial={{ opacity: 0, letterSpacing: '0.6em' }}

@@ -160,7 +160,7 @@ export function Marquee() {
   const row = garments.map((g) => (
     <span className="marquee__item" key={g}>
       {g}
-      <Mark size={16} />
+      <i className="marquee__dot" aria-hidden="true">✦</i>
     </span>
   ))
   return (

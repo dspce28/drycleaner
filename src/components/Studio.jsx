@@ -87,7 +87,6 @@ export function Booking() {
   return (
     <section className="book" id="book">
       <SilkThreads lines={16} opacity={0.4} />
-      <div className="book__bg" aria-hidden="true"><Mark size={520} /></div>
       <div className="wrap book__grid">
         <div className="book__copy">
           <p className="eyebrow eyebrow--light">Schedule a pickup</p>

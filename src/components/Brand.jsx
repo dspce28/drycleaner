@@ -2,6 +2,10 @@ import { motion } from 'framer-motion'
 
 // Vector redraw of the Aspen mark: gold peak with the green sweep beneath.
 export const MARK_GOLD = 'M405 50 L506 288 C440 282 340 318 268 392 Z'
+// Brand colours for the mark. The logo is never recoloured; on dark surfaces it sits on an ivory plate.
+const BRAND_GOLD = '#D7A233'
+const BRAND_GREEN = '#113C26'
+
 export const MARK_GREEN = 'M396 354 C440 326 486 312 516 312 L549 394 C512 366 455 350 396 354 Z'
 
 export function Mark({ size = 40, className, draw = false }) {
@@ -14,8 +18,8 @@ export function Mark({ size = 40, className, draw = false }) {
     : {}
   return (
     <svg className={className} width={size} height={size * 1.15} viewBox="258 42 300 360" aria-hidden="true">
-      <motion.path d={MARK_GOLD} fill="var(--gold)" stroke="var(--gold)" strokeWidth={draw ? 3 : 0} {...common} />
-      <motion.path d={MARK_GREEN} fill="var(--mark-green, var(--green))" stroke="var(--mark-green, var(--green))" strokeWidth={draw ? 3 : 0} {...common} />
+      <motion.path d={MARK_GOLD} fill={BRAND_GOLD} stroke={BRAND_GOLD} strokeWidth={draw ? 3 : 0} {...common} />
+      <motion.path d={MARK_GREEN} fill={BRAND_GREEN} stroke={BRAND_GREEN} strokeWidth={draw ? 3 : 0} {...common} />
     </svg>
   )
 }
